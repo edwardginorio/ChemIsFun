@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+//<!-- © 2026 Edward Ginorio. All Rights Reserved. -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHEMCENTRATION</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            user-select: none;
+        }
+        #app-container {
+            width: 850px;
+            height: 700px;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .active-screen {
+            display: flex;
+        }
+	#bottom-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px; /* Puts a nice gap between the timer and the button */
+            margin-top: 20px;
+        }
+        #timer-label {
+            font-size: 24px; 
+            font-weight: bold; 
+        }        /* Title Screen & Instructions */
+        h1 { font-size: 36px; margin-bottom: 20px; text-align: center; }
+        .menu-btn {
+            font-size: 20px; padding: 10px 20px; margin: 10px;
+            width: 250px; cursor: pointer; background: #e0e0e0;
+            border: 2px solid #ccc; border-radius: 5px;
+        }
+        .exit-btn {
+            font-size: 20px; padding: 10px 20px; margin: 10px;
+            width: 50px; cursor: pointer; background: #e0e0e0;
+            border: 2px solid #ccc; border-radius: 5px;
+        }
+        .menu-btn:hover { background: #d0d0d0; }
+        #instructions-text {
+            font-size: 18px; max-width: 600px; text-align: left; line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        /* Game Screen */
+        #banner {
+            background-color: lightcyan; width: 100%; padding: 15px 0;
+            text-align: center; font-size: 24px; font-weight: bold;
+            position: absolute; top: 0;
+        }
+        #grid-container {
+            display: grid;
+            grid-template-columns: repeat(8, 100px);
+            grid-template-rows: repeat(5, 100px);
+            gap: 4px;
+            margin-top: 60px;
+        }
+        .tile {
+            width: 100px; height: 100px;
+            background-color: #e0e0e0;
+            border: 2px solid #999;
+            font-size: 18px; font-weight: bold;
+            cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            box-sizing: border-box;
+            background-repeat: no-repeat;
+        }
+        .tile:disabled { cursor: default; }
+        #timer-label {
+            font-size: 24px; font-weight: bold; margin-top: 20px;
+        }
+        /* Leaderboard Modal */
+        #leaderboard-modal {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: lightcyan; flex-direction: column;
+//<!--            background: rgba(0,0,0,0.8); flex-direction: column; -->
+            justify-content: center; align-items: center; color: white;
+        }
+        #leaderboard-box {
+            background: white; color: black; padding: 30px; border-radius: 10px;
+            text-align: center; width: 300px;
+        }
+        .score-entry { font-size: 18px; margin: 5px 0; }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <!-- Title Screen -->
+    <div id="title-screen" class="screen active-screen" style="background-color: lightcyan;">
+        <h1>CHEMCENTRATION<br>First 20 Elements</h1>
+        <button class="menu-btn" onclick="showScreen('game-screen'); startGame();">Play Game</button>
+        <button class="menu-btn" onclick="showScreen('instructions-screen')">Instructions</button>
+        <button class="menu-btn" onclick="showScreen('leaderboard-modal'); showLeaderboard();">Show Leader Board</button>
+	<button class="menu-btn" onclick="exitGame()">Exit Game</button>
+    </div>
+
+    <!-- Instructions Screen -->
+    <div id="instructions-screen" class="screen active-screen" style="background-color: lightcyan;">
+        <h1>How to Play</h1>
+        <div id="instructions-text">
+            1. The board has 40 tiles hiding element names and symbols.<br><br>
+            2. Click a tile to reveal it. Then click a second tile to find its match.<br><br>
+            3. If they match, they turn green and reveal part of a hidden picture.<br><br>
+            4. If they don't match, they turn red and flip back over.<br><br>
+            5. Reveal the entire picture as fast as you can to make the Leader Board!
+        </div>
+        <button class="menu-btn" onclick="showScreen('game-screen'); startGame();">Play Game</button>
+        <button class="menu-btn" onclick="showScreen('title-screen')">Back to Menu</button>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen">
+        <div id="banner">CHEMCENTRATION First 20 Elements</div>
+        <div id="grid-container"></div>
+        
+        <!-- The new bottom row containing the timer and the exit button -->
+        <div id="bottom-bar">
+            <div id="timer-label">Time: 0:00.0</div>
+            <button class="menu-btn" style="margin: 0; width: 120px; font-size: 16px; padding: 5px 10px;" onclick="exitGame()">Exit Game</button>
+       </div>
+    </div>
+    <!-- Leaderboard Modal -->
+
+    <div id="leaderboard-modal">
+        <div id="leaderboard-box" style="width: 350px;">
+            <h2>🏆 Top 10 Times 🏆</h2>
+            <div id="scores-list"></div>
+            
+            <!-- Row for Reset and Main Menu -->
+            <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
+                <button class="menu-btn" style="margin: 0; width: 150px; background: #ffcccc;" onclick="resetLeaderboard()">Reset Scores</button>
+                <button class="menu-btn" style="margin: 0; width: 150px;" onclick="closeLeaderboard()">Main Menu</button>
+            </div>
+            
+            <!-- The "End of the Line" Exit Button -->
+            <button class="menu-btn" style="margin-top: 10px; width: 310px;" onclick="exitGame()">Exit Game</button>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    // Audio elements
+    const soundOpen = new Audio('door_open.wav');
+    const soundClose = new Audio('door_close.wav');
+    const soundDing = new Audio('ding.wav');
+
+    const elements = [
+        ["Hydrogen", "H"], ["Helium", "He"], ["Lithium", "Li"], ["Beryllium", "Be"],
+        ["Boron", "B"], ["Carbon", "C"], ["Nitrogen", "N"], ["Oxygen", "O"],
+        ["Fluorine", "F"], ["Neon", "Ne"], ["Sodium", "Na"], ["Magnesium", "Mg"],
+        ["Aluminum", "Al"], ["Silicon", "Si"], ["Phosphorus", "P"], ["Sulfur", "S"],
+        ["Chlorine", "Cl"], ["Argon", "Ar"], ["Potassium", "K"], ["Calcium", "Ca"]
+    ];
+
+    let cards = [];
+    let firstChoice = null;
+    let isChecking = false;
+    let matchesFound = 0;
+    
+    // Timer variables
+    let timeElapsed = 0;
+    let timerInterval = null;
+    let timerRunning = false;
+
+    function exitGame() {
+        if (confirm("Are you sure you want to exit the game?")) {
+            // Attempt to close the window (Works in app wrappers like Electron or Cordova)
+            window.close();
+            
+            // Fallback for standard web browsers that block window.close()
+            document.body.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: lightcyan; font-family: Arial, sans-serif;">
+                    <h1 style="font-size: 40px; color: #333;">Thanks for playing!</h1>
+                    <p style="font-size: 20px; color: #666;">You can safely close this browser tab.</p>
+                </div>
+            `;
+        }
+    }
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+        document.getElementById(screenId).classList.add('active-screen');
+
+    }
+
+    function startGame() {
+        // Reset state
+        clearInterval(timerInterval);
+        timeElapsed = 0;
+        timerRunning = false;
+        matchesFound = 0;
+        firstChoice = null;
+        isChecking = false;
+        document.getElementById('timer-label').innerText = "Time: 0:00.0";
+        setupData();
+        createGrid();
+    }
+
+    function setupData() {
+        cards = [];
+        elements.forEach((el, index) => {
+            cards.push({ text: el[0], matchId: index });
+            cards.push({ text: el[1], matchId: index });
+        });
+        // Shuffle array
+        for (let i = cards.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [cards[i], cards[j]] = [cards[j], cards[i]];
+        }
+    }
+
+    function createGrid() {
+        const grid = document.getElementById('grid-container');
+        grid.innerHTML = ''; // Clear previous
+
+        for (let i = 0; i < 40; i++) {
+            let r = Math.floor(i / 8);
+            let c = i % 8;
+            
+            let btn = document.createElement('button');
+            btn.className = 'tile';
+            btn.innerText = i + 1;
+            btn.dataset.index = i;
+            
+            // Calculate where this tile sits on the background picture
+            btn.dataset.bgPos = `-${c * 100}px -${r * 100}px`;
+
+            btn.onclick = () => handleTileClick(btn, i);
+            grid.appendChild(btn);
+        }
+    }
+
+    function formatTime(secondsDec) {
+        let mins = Math.floor(secondsDec / 60);
+        let secs = (secondsDec % 60).toFixed(1);
+        if (secs < 10) secs = "0" + secs;
+        return `${mins}:${secs}`;
+    }
+
+    function updateTimer() {
+        timeElapsed += 0.1;
+        document.getElementById('timer-label').innerText = "Time: " + formatTime(timeElapsed);
+    }
+
+    function handleTileClick(btn, index) {
+        if (btn.disabled || firstChoice === btn || isChecking) return;
+
+        if (!timerRunning) {
+            timerRunning = true;
+            timerInterval = setInterval(updateTimer, 100);
+        }
+
+        // Play sound and reveal tile
+        soundOpen.currentTime = 0;
+        soundOpen.play().catch(e => console.log("Audio play blocked by browser until user interaction"));
+        
+        btn.innerText = cards[index].text;
+        btn.style.backgroundColor = "lightblue";
+
+        if (firstChoice === null) {
+            firstChoice = btn;
+        } else {
+            isChecking = true;
+            setTimeout(() => evaluatePair(firstChoice, btn, index), 500);
+        }
+    }
+
+    function evaluatePair(btn1, btn2, idx2) {
+        let idx1 = btn1.dataset.index;
+        let card1 = cards[idx1];
+        let card2 = cards[idx2];
+
+        if (card1.matchId === card2.matchId) {
+            // Match
+            soundDing.currentTime = 0;
+            soundDing.play().catch(e => {});
+            btn1.style.backgroundColor = "lightgreen";
+            btn2.style.backgroundColor = "lightgreen";
+            
+            setTimeout(() => revealImage(btn1, btn2), 600);
+        } else {
+            // No Match
+            soundClose.currentTime = 0;
+            soundClose.play().catch(e => {});
+            btn1.style.backgroundColor = "red";
+            btn2.style.backgroundColor = "red";
+
+            setTimeout(() => revertTiles(btn1, btn2), 800);
+        }
+    }
+
+    function revealImage(btn1, btn2) {
+        [btn1, btn2].forEach(btn => {
+            btn.innerText = "";
+            btn.disabled = true;
+            btn.style.backgroundColor = "transparent";
+            btn.style.backgroundImage = "url('picture.jpg')";
+            btn.style.backgroundSize = "800px 500px";
+            btn.style.backgroundPosition = btn.dataset.bgPos;
+            btn.style.border = "none";
+        });
+
+        matchesFound += 2;
+        firstChoice = null;
+        isChecking = false;
+
+        if (matchesFound === 40) {
+            gameOver();
+        }
+    }
+
+    function revertTiles(btn1, btn2) {
+        [btn1, btn2].forEach(btn => {
+            btn.innerText = parseInt(btn.dataset.index) + 1;
+            btn.style.backgroundColor = "#e0e0e0";
+        });
+        firstChoice = null;
+        isChecking = false;
+    }
+
+    function gameOver() {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        
+        let finalTime = parseFloat(timeElapsed.toFixed(1));
+        let timeStr = formatTime(finalTime);
+
+        setTimeout(() => {
+            let initials = prompt(`You Won! Puzzle completed in ${timeStr}!\nEnter your initials (up to 3 letters):`);
+            if (initials) {
+                saveScore(initials.substring(0, 3).toUpperCase(), finalTime, timeStr);
+            }
+            showLeaderboard();
+        }, 500);
+    }
+
+    function saveScore(initials, rawTime, timeStr) {
+        let scores = JSON.parse(localStorage.getItem("chemcentrationScores")) || [];
+        scores.push({ initials, rawTime, timeStr });
+        scores.sort((a, b) => a.rawTime - b.rawTime);
+        scores = scores.slice(0, 10); // Keep top 10
+        localStorage.setItem("chemcentrationScores", JSON.stringify(scores));
+    }
+
+    function showLeaderboard() {
+        let scores = JSON.parse(localStorage.getItem("chemcentrationScores")) || [];
+        let listDiv = document.getElementById('scores-list');
+        listDiv.innerHTML = "";
+
+        if (scores.length === 0) {
+            listDiv.innerHTML = "<p>No scores yet!</p>";
+        } else {
+            scores.forEach((score, i) => {
+                let entry = document.createElement('div');
+                entry.className = "score-entry";
+                entry.innerText = `${i + 1}. ${score.initials} - ${score.timeStr}`;
+                listDiv.appendChild(entry);
+            });
+      }
+       
+        document.getElementById('leaderboard-modal').style.display = "flex";
+    }
+
+    function closeLeaderboard() {
+        document.getElementById('leaderboard-modal').style.display = "none";
+        showScreen('title-screen');
+    }
+</script>
+</body>
+</html>
