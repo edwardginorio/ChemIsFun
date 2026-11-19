@@ -1,0 +1,2199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for HTML5 for Linux version 5.6.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stoichiometry Master Suite</title>
+  <style>
+        :root {
+            --bg: lightgray;
+            --accent: lightblue;
+            --accent-hover: #0284c7;
+            --text:white;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: lightcyan; /*var(--bg);*/
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+  /* All screens are hidden by default */
+  /* Container Box Fix */
+  /* Ensure the container stacks screens vertically */
+
+  .app-container {
+  width: 95%;
+  max-width: 900px;
+  margin: 20px auto;
+  background-color: lightgray; /*var(--bg);*/
+  }
+        
+  .app-container, main {
+  display: flex;
+  flex-direction: column; /* Prevents elements from wrapping side-by-side justify-content: center; */
+
+  width: 95%;
+  max-width: 1000px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: blue; /*var(--accent);*/
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        /* Modal Overlay Styling */
+        /* Semi-transparent dark backdrop (prevents turning totally black) */
+        /* This hides the modal by default and floats it ABOVE your game */
+  /* Modal styling fix to ensure it stays centered over everything */
+
+  /* Darkened backdrop overlay covering the screen */
+
+
+  /* Dark semi-transparent full-screen backdrop */
+        .modal-overlay {
+          display: none;   /* Crucial: Keeps it hidden until button is clicked */
+          position: fixed; /* Crucial: Removes it from the normal page layout */
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background-color:lightgray; /* rgba(0, 0, 0, 0.6) */;
+          z-index: 1000;
+          justify-content: center;
+          align-items: center;
+          color: blue;
+        }
+
+  /* Flex centering triggered when active */
+  .modal-overlay.active {
+      display: flex; !important;
+      justify-content: center; !important;
+      align-items: center; !important;
+  }
+
+  /* Compact, floating dialog card */
+  .modal-card {
+  background-color: lightblue; /* #1e293b !important; */
+  color: black; /* #f8fafc !important; */
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 30px;
+  width: 90%;
+  max-width: 650px;
+  margin: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  box-sizing: border-box;
+        }
+
+  /* Compact, centered dialog box card */
+  .modal-content {
+  background-color: lightblue; /* #1e293b;*/
+  color: #f8fafc;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 30px;
+  width: 90%;
+  max-width: 1000px;   /* Prevents full-screen expansion;*/
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  text-align: left;
+        }
+
+        .modal-footer {
+          display: flex;
+          justify-content: flex-end;
+          margin-top: 16px;
+          color: black;
+        }
+
+        /* Compact, smaller Modal Window
+        .modal-content h2 { */
+        .h2 {
+            font-size: 1.25rem;
+            color: var(--border);
+            margin-bottom: 8px;
+            margin-left: 100px;
+        }
+
+        .modal-body p, .modal-body ul {
+            margin-bottom: 10px;
+            font-size: 1.00rem;
+            line-height: 1.4;/*     color: var(--text-muted, #94a3b8);*/
+            color: black; /* var(--text, #94a3b8);*/
+        }
+
+        .modal-body ul {
+            padding-left: 18px;
+        }
+
+        /* Navigation Tabs */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 12px;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            background: var(--bg) ; /*transparent;*/
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent);
+            color: #0f172a;
+        }
+
+        /* Stats & Header Bar */
+        .stats-bar {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #0f172a;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+        .stat-item {
+            display: flex;
+  /*            flex-direction: row;*/
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text);
+            /*var(--text-muted);*/
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* Game Views */
+        .game-view {
+            display: none;
+            color: black;
+        }
+
+        .game-view.active {
+            display: block;
+        }
+
+        /* Drag and Drop Grid */
+        .board {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 640px) {
+            .board { grid-template-columns: 1fr; }
+        }
+
+        .column-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            margin-left: 20px;
+            color: var(--text-muted);
+        }
+
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+            min-height: 260px;
+        }
+
+        .drag-card {
+            background-color: gray ;
+            color: white ;
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            cursor: grab;
+            font-weight: 500;
+            user-select: none;
+            margin-right: 20px;
+            transition: transform 0.15s, background-color 0.15s;
+        }
+
+        .drag-card:hover {
+            background-color: #475569;
+        }
+
+        .drag-card.dragging { opacity: 0.5; }
+        .drag-card.selected { outline: 2px solid var(--border); background-color: gray; }
+
+        .drop-zone {
+            background-color: rgba(15, 23, 42, 0.5);
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 10px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .drop-zone.drag-over {
+            border-color: var(--accent);
+            background-color: rgba(56, 189, 248, 0.1);
+        }
+
+        .step-label {
+            font-weight: 700;
+            color: var(--accent);
+            min-width: 60px;
+        }
+
+        .drop-zone .drag-card { flex-grow: 1; margin: 0; }
+        .drop-zone.correct {
+	  border-color: var(--success);
+	  background-color: rgba(34, 197, 94, 0.1); }
+
+        .drop-zone.incorrect {
+	border-color: var(--error);
+	  background-color: rgba(239, 68, 68, 0.1); }
+
+        /* Problem Card Styling */
+        .problem-card {
+            background-color: lightblue;
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .problem-equation {
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin: 12px 0;
+            text-align: center;
+            background-color: #1e293b;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        input[type="number"] {
+            flex-grow: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background-color: lightgray;
+            color: var(--border);
+            font-size: 1rem;
+        }
+
+        /* Controls & Buttons */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background-color: var(--text-muted); /*--accent);*/
+            color: black;/*#0f172a;*/
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            margin-right: 20px;
+            cursor: pointer;
+        }
+
+        .btn:hover
+        {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-secondary
+        {
+        background-color: var(--text-muted);
+	color: black;
+	border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover
+        {
+            background-color: #334155; color: var(--text);
+        }
+
+        #message { font-weight: 600; font-size: 0.95rem; }
+        .message-success { color: var(--success); }
+        .message-error { color: var(--error); }
+
+        /* History Table */
+        .history-table {
+         /*   display: flex; */
+            width: 95%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .history-table th, .history-table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .history-table th {
+            color: black;
+        } /* var(--text); }*/
+        
+        /* NEW */
+        
+        .coef-input {
+          width: 50px;
+          height: 50px;
+          text-align: center;
+          font-size: 1.5rem;
+          font-weight: bold;
+          border: 2px solid #64748b;
+          border-radius: 8px;
+          background-color: lightgreen;/*  #0f172a;*/
+          color: black; /*#f8fafc;*/
+          outline: none;
+          transition: all 0.3s;
+        }
+
+        /* Turns box green */
+        .coef-input.correct {
+          border-color: #22c55e;
+          background-color: rgba(34, 197, 94, 0.15);
+          color: #22c55e;
+        }
+
+        /* Turns box red */
+        .coef-input.incorrect {
+          border-color: #ef4444;
+          background-color: rgba(239, 68, 68, 0.15);
+          color: #ef4444;
+        }
+  /* Ensure the parent container creates the reference boundary */
+  .problem-solver-card {
+  position: relative; 
+  }
+
+  .challenge-title-container {
+      display:none;
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%); /* Centers the floating element horizontally */
+  z-index: 1000;              /* Keeps it above cards and modals */
+  background-color: var(--card-bg, #1e293b);
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 1px solid var(--border, #334155);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+  /* Position the title over the parent card */
+  .challenge-title {
+        display:none;
+  position: fixed;
+  top: -15px;
+  left: 20px;
+  z-index: 10;
+  background-color: var(--card-bg, #1e293b);
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--accent, #38bdf8);
+  color: var(--accent, #38bdf8);
+  }        /* end of NEW */
+
+  /* Ensure active views fill the container */
+  /* Ensure each active screen occupies full container width */
+  .view-screen {
+  display: none;
+  width: 95%;
+  clear: both
+  float: none;
+  margin-left: 20px;
+  box-sizing: border-box;
+  }
+
+  .view-screenb {
+  display: flex;
+  width: 95%;
+  clear: both
+  float: none;
+  margin-left: 20px;
+  box-sizing: border-box;
+  }
+
+  .view-screen.active {
+  display: block;
+  color: black;
+  }
+
+  /* Add this to prevent the background from shrinking when screens switch */
+  body, html {
+  min-height: 100vh;
+  margin: 0;
+  }
+
+  .option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+  width: 95%;
+  box-sizing: border-box;
+  }
+
+  .choice-card {
+  display: flex;
+  align-items: flex-start; /* Aligns checkbox nicely with multi-line text */
+  gap: 12px;
+  background-color: lightgray;
+  color: black;
+  border: 2px solid #334155;
+  border-radius: 8px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 95%;
+  box-sizing: border-box;
+  }
+
+  .choice-carda {
+  display: flex;
+  align-items: flex-start; /* Aligns checkbox nicely with multi-line text */
+  gap: 12px;
+  background-color: lightgray;
+  color: black;
+  /*border: 2px solid #334155;
+  border-radius: 8px; */
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 80%;
+  box-sizing: border-box;
+
+  }
+  /* Crucial: Prevents text from overflowing flex containers */
+  .choice-card span {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  }
+
+  .choice-card.hover {
+  border-color: #38bdf8;
+  }
+
+  .choice-card.small {
+  display: block;
+  color: black; /* #94a3b8;*/
+  font-size: 0.85rem;
+  margin-top: 2px;
+  }
+
+  /* Dynamic State Colors */
+  .choice-card.correct-card {
+  background-color: lightgray; /*o rgba(34, 197, 94, 0.2) !important;*/
+  border-color: #22c55e !important;
+  color: black; /*#f8fafc !important;*/
+  }
+
+  .choice-card.incorrect-card {
+  background-color: lightgray; /* rgba(239, 68, 68, 0.2) !important;*/
+  border-color: #ef4444 !important;
+  color: black; /* #f8fafc !important;*/
+  }
+  </style>
+</head>
+
+<body oncontextmenu="return false;">
+
+  <div class="app-container">
+    <header>
+      <h1>Stoichiometry Trainer</h1>
+      <div class="nav-buttons">
+        <button class="btn btn-secondary nav-btn" onclick="openHelpModal()">Help</button>
+	<button class="btn btn-danger nav-btn" onclick="exitGame()">Exit Game</button>
+      </div>
+    </header><!-- Top Tab Navigation Bar -->
+    <nav class="tabs">
+      <button class="tab-btn active" onclick=
+        "switchTab(this, 'ordering-view')">Step Ordering</button>
+      <button class="tab-btn" onclick=
+        "switchTab(this, 'problems-view')">Problem Solver</button>
+      <button class="tab-btn" onclick=
+        "switchTab(this, 'history-view')">Score History</button>
+    </nav>
+    <main class="app-container">
+      <div class="stats-bar">
+        <div class="stat-item">
+
+
+          <span class="stat-label">Timer</span>
+	  <span class="stat-value" id="timer-display">00:00</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Score</span>
+	  <span class="stat-value" id="score-display">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Best Time</span> <span class=
+          "stat-value" id="best-time-display">0s</span>
+        </div>
+      </div><!-- TAB 1: STEP ORDERING -->
+    </main><!-- Screen 1: Hub -->
+    <div id="ordering-view" class="view-screen active">
+      <!--<h2>Welcome to Chemistry Suite</h2>
+        <p>Select a tab above to begin an activity.</p> -->
+      <!--      </div> Screen 2: Step Ordering -->
+      <!--      <div id="ordering-view" class="view-screen"> -->
+      <h2>Stoichiometry Step Ordering</h2>
+      <p>Drag & Drop in Correct Order</p>
+      <div class="board">
+        <div>
+          <div class="column-title">
+            Target Sequence
+          </div>
+          <div class="item-list">
+            <div class="drop-zone" data-step="1">
+              <span class="step-label">Step 1:</span>
+            </div>
+            <div class="drop-zone" data-step="2">
+              <span class="step-label">Step 2:</span>
+            </div>
+            <div class="drop-zone" data-step="3">
+              <span class="step-label">Step 3:</span>
+            </div>
+            <div class="drop-zone" data-step="4">
+              <span class="step-label">Step 4:</span>
+            </div>
+          </div>,
+        </div>
+      <div>
+        <div class="column-title">
+          Randomized Pool
+        </div>
+        <div id="pool-zone" class="item-list"></div>
+      </div>
+    </div>
+    <div class="controls" style="margin-top: 20px;">
+      <button class="btn" onclick="resetOrderingGame()">Reset</button>
+      <span id="ordering-message"></span>
+      <button class="btn" onclick="checkOrdering()">Submit Order</button>
+    </div>
+  </div>
+  <div id="problems-view" class="view-screen">
+    <!-- Screen 3: Problem Solver -->
+    <div class="challenge-title">
+      <h3>Stoichiometry Reaction Challenge</h3>
+    </div>
+    <div id="problem-solver-controls" style="text-align: center; margin: 20px 0;">
+      <p id="problem-selector">"How low is low</p>
+    </div>
+    <div id="y-area" style="text-align: center; margin-top: 20px;">
+      <h3 id="solved-equation" style="color: var(--border);"></h3>
+      <p id="problem-text"></p>
+    </div>
+  </div>
+  <!-- TAB 3: SCORE HISTORY -->
+  <div id="history-view" class="view-screen">
+    <h2>Recent Performance History</h2>
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Mode</th>
+          <th>Time</th>
+          <th>Result / Problem #</th>
+          <th>Initials</th>
+        </tr>
+      </thead>
+      <tbody id="history-tbody">
+        <!-- Recorded scores go here -->
+      </tbody>
+    </table>
+    <div class="controls" style="margin-top: 16px;">
+      <button class="btn btn-secondary" onclick="clearHistory()">Clear History</button>
+      <button class="btn btn-secondary" onclick="renderHistory(0)">Show Step Ordering
+      </button>
+      <button class="btn btn-secondary" onclick="renderHistory(1)">Show Balancing</button>
+    </div>
+  </div><
+  <!--<div class="app-container"> -->
+   
+  <!-- Paste the Help Modal EXACTLY here, outside of all other containers -->
+  <div id="help-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h2>How to Play</h2>
+      <hr style="margin: 12px 0; border-color: var(--border);">
+      <!-- Added max-height & overflow-y so long text scrolls cleanly -->
+      <div class="modal-body" style="max-height: 60vh; overflow-y: auto;
+	padding-right: 8px;">
+        <p><strong>Stoichiometry</strong> is simply accounting for
+        chemical reactions. Almost every stoichiometry problem
+        boils down to a single core rule: you cannot compare
+        substances using grams or liters directly—you must convert
+        through moles.</p>
+        <p>Think of the mole as the central bridge. Whatever units
+        you start with, convert to moles first, use the reaction
+        coefficients to bridge across to your target substance, and
+        then convert out to your final unit.</p>
+        <p><strong>Prerequisite for mole ratios:</strong> You
+        cannot calculate stoichiometry without balanced equation
+        coefficients. Make sure the number of atoms of each element
+        is equal on both sides of the arrow.</p>
+        <p>If you need practice balancing equations try:</p>
+        <p><a href=
+        "https://phet.colorado.edu/sims/html/balancing-chemical-equations/latest/balancing-chemical-equations_en.html"
+        target="_blank" style="color: blue;">Open PhET Balancing
+        Simulator</a></p>
+        <p>Take the starting value provided in the problem and
+        convert it into moles:</p>
+        <p><strong>1. Step Ordering:</strong> Drag and drop the 4
+	stoichiometry steps on the right into their correct logical
+	order for stoichiometry problems on the left.</p>
+        <p><strong>Checking Answers:</strong> Click <em>Check
+        Order</em> to test your solution. Green indicates a correct
+        placement, red indicates an incorrect slot.</p>
+        <p><strong>2. Problem Solver:</strong> Practice your skills
+        with some problems!</p>
+	<p>First, you select a problem. Then you have to balance the
+	 associated equation. At thst point you have a decision to ,
+         make, whether to attempt to solve the problem with assistance
+         or without.</p>
+	 <p><strong>Unassisted</strong> only presents the problem 
+         and a field for the answer.</p>
+	 <p><strong>Assisted</strong> will take you through the
+         solution process step by step.</p>
+        <ul>
+          <li><strong>From Mass (g):</strong> Divide by molar mass
+          (g/mol).</li>
+          <li><strong>From Volume of Gas (L at STP):</strong>
+          Divide by 22.4 L/mol.</li>
+          <li><strong>From Particles/Molecules:</strong> Divide by
+          Avogadro's number (6.022 × 10<sup>23</sup>).</li>
+        </ul>
+        <p>Now you must apply the <strong>mole ratio</strong> that is 
+        comprised of the moles of what you are looking for over the 
+        moles of what you started with.</p>
+        <p>Convert your target substance (Substance B) into
+        whatever unit the prompt asks for:</p>
+        <ul>
+          <li><strong>To Mass (g):</strong> Multiply by molar mass
+          (g/mol).</li>
+          <li><strong>To Volume (L at STP):</strong> Multiply by
+          22.4 L/mol.</li>
+          <li><strong>To Number of Particles:</strong> Multiply by
+          6.022 × 10<sup>23</sup>.</li>
+        </ul>
+        <p><em>NOTE: If either side is in moles, NO conversion is
+        necessary!</em></p>
+        <p>Finally you calculate the formula presented.</p>
+	<p>For example:<br>
+	10 grams H₂ / 2 g/mol ) × (2 mol H₂O / 2 mol H₂) × 18 g/m)<br><br>
+        First multply the numerators: 10 × 2 × 18 = 360<br>
+        Then multply the denominators: 2 × 2 × 1 = 4<br>
+        Now divide the numerators by the denominators:<br>
+        360 / 4 = <u>90</u>(g) which is the answer (only enter numbers)</p>
+	<p>If you try Assisted Mode and enter a different answer 3
+	times, you can press <strong>Show Correct Answer</strong> to
+        see the correct answer.</p>
+	<p>In Unassisted Mode, if your answer is more than 10% off, 
+	you will be given the opportunity to change to Assisted Mode.</p>
+        <p><strong>3. Score Hiistory:</strong> You can view meither <u>Step
+	Ordering</u> or <u>Balancing</u> equation scores</p> <br>
+<p style="color: blue; text-align: left; margin-bottom: 24px;">
+  <a href="https://x.com" target="_blank" rel="noopener noreferrer">
+    Comments, Criticisms on X @EdwardG611113</a>
+</p><p style="color: blue; text-align: left; margin-bottom: 24px;"><br>
+        <div class="modal-footer">
+
+<button class="btn" onclick="closeHelpModal()">Got It!</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- app content2... -->
+  <!-- TAB 2: PROBLEM SOLVER -->
+  <!-- 2. Balancing Modal (Must be a direct sibling to help-modal) -->
+  <!-- app content3... -->
+  <!-- Screen 3: Problem Solver -->
+  <div id="balancing-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h2 style="margin-top: 0; color: #f8fafc;">Step 1: Balance the Reaction</h2><br>
+      <div class="stats-bar">
+        <div class="stat-item">
+          <span class="stat-label">Timer</span>
+          <span class="stat-value" id="timer-display2">00:00</span>
+	</div>
+        <div class="stat-item">
+          <span class="stat-label">Problem #</span>
+          <span class="stat-value" id="problem-display">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Best Time</span>
+          <span class="stat-value" id="best-time-display2">0</span>
+        </div>
+      </div>
+      <p>Fill in the correct coefficients. (<strong>Enter '1' if no additional coefficient is needed</strong>)
+      </p>
+      <!-- Rendered equation inputs + formulas will appear here -->
+      <div id="equation-container" style="margin: 25px 0; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px;">
+      </div>
+      <div id="modal-status" style="margin-bottom: 15px; font-weight: bold;
+	min-height: 24px;">
+      </div>
+      <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+        <button type="button" class="btn" onclick="checkBalance()">Check Coefficients
+	</button>
+	<button type="button" class="btn btn-secondary" onclick=
+	  "document.getElementById('balancing-modal').classList.remove('active')">
+          Cancel</button>
+      </div>
+    </div>
+  </div><!-- MODE SELECTION MODAL ("Continue?") -->
+  <div id="mode-select-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h2 style="margin-top: 0;">Balanced! -- Continue?</h2><br>
+      <p font-size=24px style="color: black; margin-bottom: 25px;">
+	How would you like to solve the stoichiometry calculations?</p>
+      <div style="display: flex; gap: 15px; justify-content: center;">
+        <button type="button" class="btn" style="background: #8b5cf6; color: white" onclick=
+          "selectMode('assisted')">Assisted Mode</button>
+        <button type="button" class="btn" style="background: #8b5cf6; color: white" onclick=
+          "selectMode('unassisted')">Unassisted Mode</button>
+      </div>
+    </div>
+  </div><!-- ASSISTED WIZARD MODAL -->
+  <div id="assisted-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 600px; text-align: left;">
+      <!-- STEP 1: GIVEN UNIT -->
+      <div id="assisted-step-1" class="assisted-step-view">
+      <form id="Form1" autocomplete="off" name="Form1">
+        <h3 style="margin-top:0;">Step 1: Input Conversion</h3><br>
+        <p id="theProblem">The problem:</p><br>
+        <p style="font-weight: bold; font-size: 1.1rem;">What is
+        your input value?</p>
+        <div class="option-list">
+          <label class="choice-card" onclick="checkStep1(this, 'moles')">
+	    <input type="checkbox" name="step1-unit" autocomplete="off">
+	    <span>moles <small>(no conversion necessary)</small></span></label>
+	  <label class="choice-card" onclick="checkStep1(this, 'grams')">
+	    <input type="checkbox" name="step1-unit" autocomplete="off"> <span>grams
+	      <small>(divide the grams by the molar mass of what you are given)</small>
+	    </span></label>
+          <label class="choice-card" onclick="checkStep1(this, 'liters')">
+	    <input type="checkbox" name="step1-unit" autocomplete="off"> <span>liters
+	      <small>(divide what you were given by 22.4 l/mol)</small></span></label>
+	  <label class="choice-card" onclick="checkStep1(this, 'atoms/molecules')">
+	    <input type="checkbox" name="step1-unit" autocomplete="off">
+	    <span>molecules or atoms
+              <small>(divide what you were given by 6.02 * 10 to the 23rd power)</small>
+	    </span></label>
+	  </form>
+        </div>
+      </div><!-- STEP 2: MOLE RATIO name="Form2" -->
+      <div id="assisted-step-2" class="assisted-step-view" style="display: none;">
+      <form id="Form2" autocomplete="off" name="Form2">
+      <h3 style="margin-top:0;">Step 2: Mole Ratio</h3><br>
+      <p id="theEquation">Equation:</p><br>
+      <p id="theProblem3">The problem:</p><br>
+      <p style="font-weight: bold; font-size: 1.1rem; margin-bottom: 4px;">
+        What is the mole ratio?</p>
+      <p style="color: #38bdf8; font-size: 0.95rem; margin-top: 0; color: black;">
+      (the coefficient of what you are looking for divided by the
+      coefficient of what you are given)</p>
+      <div id="step2-options-container" class="option-list" style="margin-top: 15px;"></div>
+    </form>
+    </div>
+   <!-- STEP 3: TARGET UNIT -->
+   <div id="assisted-step-3" class="assisted-step-view" style="display: none;">
+    <form id="Form3" autocomplete="off" name="Form3">
+      <h3 style="margin-top:0;">Step 3: Final Product Conversion</h3><br>
+      <p id="theProblem2">The problem:</p><br>
+      <p style="font-weight: bold; font-size: 1.1rem;">What is your
+      final product?</p>
+      <div class="option-list">
+        <label class="choice-card" onclick="checkStep3(this, 'moles')">
+	  <input type="checkbox" name="step3-unit">
+	  <span>moles <small>(no conversion necessary)</small></span></label>
+	<label class="choice-card" onclick="checkStep3(this, 'grams')"><input type="checkbox"
+	  name="step3-unit">
+	  <span>grams <small>(the value you have times the molar mass of the product)</small>
+	  </span></label>
+        <label class="choice-card" onclick="checkStep3(this, 'liters')">
+	  <input type="checkbox" name="step3-unit"> <span>liters <small>(result times 22.4l/mol)
+	  </small></span></label>
+	<label class="choice-card" onclick="checkStep3(this, 'atoms/molecules')">
+	  <input type="checkbox" name="step3-unit">
+          <span>atoms/molecules<small>(result times 6.02 * 10 to the 23rd)</small></span>
+	</label>
+      </div>
+    </form>
+  </div><!-- STEP 4: FINAL CALCULATION -->
+  <div id="assisted-step-4" class="assisted-step-view" style="display: none;">
+    <h3 style="margin-top:0;">Step 4:Final Calculation</h3>
+    <div id="guided-summary-box" style="background: lightgray; padding: 15px;
+      border-radius: 8px; margin-bottom: 20px; font-family: monospace;">
+    </div>
+    <label style="display:block; margin-bottom: 8px; font-weight: bold;">
+      Enter final result:</label>
+    <input type="number" id="assisted-final-input" step="any" placeholder="Enter answer"
+      style="width: 95%; padding: 10px; font-size: 1.1rem; border-radius: 6px;
+      border: 2px solid #334155; box-sizing: border-box; margin-bottom: 15px;">
+    <button type="button" class="btn" onclick="checkAssistedFinalAnswer()"
+      style="width: 95%;">Submit Final Calculation</button><br><br>
+    <button type="button" class="btn btn-secondary" style="width: 55%" onclick=
+      "checkAnswer()">Show Correct Answer<small> (After 3 Tries)</small></button>
+    <button type="button" class="btn btn-secondary" style="width: 35%" onclick="cancelOut()">
+      Cancel </button>
+  </div>
+  <div id="assisted-status" style="margin-top: 15px; font-weight: bold; min-height: 24px;">
+  </div>
+  </div>
+  <!-- Area where the solved equation app}ears AFTER the modal finishes  </div> -->
+  <!-- </div> app content3... -->
+  <script>
+
+        // --- Global State ---
+        let activeTab = 'ordering';
+        let score = 0;
+        let currentProblemIndex = 0;
+	let problemNumber = 0;
+        // Global history state
+        let gameHistory = [];
+
+        let selectedCard = null;
+
+        // 1. DATA STRUCTURES MUST BE AT THE VERY TOP
+        const correctOrdering = {
+        1: "Balance Equation",
+        2: "Convert given quantity to moles",
+        3: "Use mole ratio from balanced equation",
+        4: "Convert moles to required unit"
+        };
+
+        let activeProblem = null; // Stores the currently active problem object
+
+    let currentSolverMode = 'unassisted'; // 'assisted' or 'unassisted'
+    let assistedStep = 1;
+    let sampleProblem = null;
+    let actveProblem = null;
+    let numberProblems = 2;
+
+ const problemZero = {
+  equation: "2H₂ + O₂ → 2H₂O",
+  coefficients: [2, 1, 2],
+  compounds: ["H₂", "O₂", "H₂O"],
+  reactantCount: 2, // Tells the loop where reactants end and products begin
+
+  // Stoichiometry Problem Context
+  givenValue: 10.0,
+  givenUnit: "grams", // Correct answer key for Screen 1: 'moles', 'grams', 'liters', or 'atoms/molecules'
+  givenCompound: "H₂",
+  givenConversion: "g/mol",
+  givenCoeff: 2,
+  givenMolarMass: 2,
+
+  targetCompound: "H₂O",
+  targetUnit: "grams", // Correct answer key for Screen 3
+  targetCoeff: 2,
+  targetConversion: "g/mol",
+  targetMolarMass: 18,
+
+  // Mole Ratio: (Coeff Looking For) / (Coeff Given) = 2 / 2 = 1.0
+  expectedMoleRatio: "2/2", 
+
+  // 10g H₂ / 2 g/mol * (2 mol H₂O / 2 mol H₂) * 18 g/mol = 90g H₂O
+  expectedAnswer: 90,
+  problem: "How many grams of H₂O are produced from 10 grams of H₂?"
+ };
+
+ const problemOne = {
+  equation: "H₂ + Cl₂ → 2HCl",
+  coefficients: [1, 1, 2],
+  compounds: ["H₂", "Cl₂", "HCl"],
+  reactantCount: 2, // Tells the loop where reactants end and products begin
+
+  // Stoichiometry Problem Context
+  givenValue: 67.2,
+  givenUnit: "liters", // Correct answer key for Screen 1: 'moles', 'grams', 'liters', or 'atoms/molecules'
+  givenCompound: "Cl₂",
+  givenConversion: "l/mol",
+  givenCoeff: 1,
+  givenMolarMass: 22.4,
+
+  targetCompound: "HCl",
+  targetUnit: "grams", // Correct answer key for Screen 3
+  targetCoeff: 2,
+  targetConversion: "g/mol",
+  targetMolarMass: 36.5,
+
+  // Mole Ratio: (Coeff Looking For) / (Coeff Given) = 2 / 2 = 1.0
+  expectedMoleRatio: "2/1", 
+  expectedAnswer:  219.0,
+  problem: "How many grams of HCl can be produced if 67.2 liters of Cl₂ is reacted with an unlimited supply of H2?"
+ };
+
+ const problemTwo = {
+  equation: "4Fe(s) + 3O₂(g) → 2Fe₂O₃(s)",
+  coefficients: [4, 3, 2],
+  compounds: ["Fe", "O₂", "Fe₂O₃"],
+  reactantCount: 2, // Tells the loop where reactants end and products begin
+
+  // Stoichiometry Problem Context
+  givenValue: 112.0,
+  givenUnit: "grams", // Correct answer key for Screen 1: 'moles', 'grams', 'liters', or 'atoms/molecules'
+  givenCompound: "Fe",
+  givenCoeff: 4,
+  givenConversion: "g/mol",
+  givenMolarMass: 56.0,
+
+  targetCompound: "Fe₂O₃",
+  targetUnit: "grams", // Correct answer key for Screen 3
+  targetCoeff: 2,
+  targetConversion: "g/mol",
+  targetMolarMass: 160.0,
+
+  // Mole Ratio: (Coeff Looking For) / (Coeff Given) = 2 / 2 = 1.0
+  expectedMoleRatio: "2/4", 
+
+  expectedAnswer: 160,
+  problem: "What mass of iron(III) oxide (Fe₂O₃) is produced when 112.0 grams of iron (Fe) completely react with oxygen? (Use atomic mass: Fe approx 56.0 g/mol, molar mass of Fe₂O₃ approx 160.0 g/mol)"
+ };
+
+ const problemThree = {
+  equation: "CaCO₃(s) → CaO(s) + CO₂(g)",
+  coefficients: [1, 1, 1],
+  compounds: ["CaCO₃", "CaO", "CO₂"],
+  reactantCount: 1, // Tells the loop where reactants end and products begin
+
+  // Stoichiometry Problem Context
+  givenValue: 0.5,
+  givenUnit: "moles", // Correct answer key for Screen 1: 'moles', 'grams', 'liters', or 'atoms/molecules'
+  givenCompound: "CaCO₃",
+  givenCoeff: 1,
+  givenConversion: "",
+  givenMolarMass: 1,
+
+  targetCompound: "CO₂",
+  targetUnit: "grams", // Correct answer key for Screen 3
+  targetCoeff: 1,
+  targetConversion: "g/mol",
+  targetMolarMass: 44.0,
+
+  // Mole Ratio: (Coeff Looking For) / (Coeff Given) = 2 / 2 = 1.0
+  expectedMoleRatio: "1/1", 
+
+  expectedAnswer: 22.0,
+  problem: "What mass of carbon dioxide (CO₂) is produced when 0.50 moles of calcium carbonate (CaCO₃) thermally decompose completely? (Use molar mass of CO₂ approx 44.0 g/mol)"
+ };
+
+const problemFour = {
+  equation: "CH₄(g) + 2O₂(g) → CO₂(g) + 2H₂O(g)",
+  coefficients: [1, 2, 1, 2],
+  compounds: ["CH₄", "O₂", "CO₂", "H₂O"],
+  reactantCount: 2, // Tells the loop where reactants end and products begin
+
+  // Stoichiometry Problem Context
+  givenValue: 16.0,
+  givenUnit: "grams", // Correct answer key for Screen 1: 'moles', 'grams', 'liters', or 'atoms/molecules'
+  givenCompound: "CH₄",
+  givenCoeff: 1,
+  givenConversion: "g/mol",
+  givenMolarMass: 16.0,
+
+  targetCompound: "H₂O",
+  targetUnit: "grams", // Correct answer key for Screen 3
+  targetCoeff: 2,
+  targetConversion: "g/mol",
+  targetMolarMass: 18.0,
+
+  // Mole Ratio: (Coeff Looking For) / (Coeff Given) = 2 / 2 = 1.0
+  expectedMoleRatio: "2/1", 
+
+  expectedAnswer: 36.0,
+  problem: "What mass of water (H₂2O) is produced from the complete combustion of 16.0 grams of methane (CH₄4})? (Use molar masses: (CH₄ approx 16.0 g/mol), (H₂O approx 18.0 g/mol)"
+  };
+const problemFive = { // problemOneReactantTwoProducts
+  equation: "2H₂O₂ → 2H₂O + O₂",
+  coefficients: [2, 2, 1],
+  compounds: ["H₂O₂", "H₂O", "O₂"],
+  reactantCount: 1, // Only 1 reactant before the arrow
+
+  // Stoichiometry Problem Context
+  givenValue: 54.0,
+  givenUnit: "grams", // Correct answer key for Screen 1: 'moles', 'grams', 'liters', or 'atoms/molecules'
+  givenCompound: "H₂O₂",
+  givenCoeff: 2,
+  givenConversion: "g/mol",
+  givenMolarMass: 34.0,
+
+  targetCompound: "O₂",
+  targetUnit: "liters", // Correct answer key for Screen 3
+  targetCoeff: 1,
+  targetConversion: "l/mol",
+  targetMolarMass: 22.4,
+
+  // Mole Ratio: (Coeff Looking For) / (Coeff Given) = 2 / 2 = 1.0
+  expectedMoleRatio: "1/2", 
+
+  expectedAnswer: 44.8,
+  problem: "What volume (in liters) will be released from 54g of hydrogen peroxide? (H₂O₂ approx 68.0 g/mol)"
+  };
+
+const problemTwoReactantsTwoProducts = {
+  equation: "CH₄ + 2O₂ → CO₂ + 2H₂O",
+  coefficients: [1, 2, 1, 2],
+  compounds: ["CH₄", "O₂", "CO₂", "H₂O"],
+  reactantCount: 2 // Tells the loop where reactants end and products begin
+};
+
+
+
+        // --- GLOBAL TIMER SETUP ---
+        let timerInterval = null;
+        let secondsElapsed = 0;
+
+        function startTimer(which) {
+        stopTimer(); // Reset anyz active interval first
+        const besttimeDisplay  = document.getElementById('best-time-display');
+        const besttimeDisplay2 = document.getElementById('best-time-display2');
+	returnCode = userHistory(which);
+	if (returnCode === 1) {
+	  if (besttimeDisplay) besttimeDisplay.textContent = `${BestTime}`;
+          else besttimerDisplay.textContent = '0s';
+	} else if (returnCode === 2) {
+	  if (besttimeDisplay2) besttimeDisplay2.textContent = `${BestTimeB}`;
+          else besttimerDisplay2.textContent = '0s';
+        }
+        secondsElapsed = 0;
+
+        const timerDisplay1 = document.getElementById('timer-display');
+        const timerDisplay2 = document.getElementById('timer-display2');
+	if (which === 0) {
+	  timerDisplay = timerDisplay1;
+	} else {
+	  timerDisplay = timerDisplay2;
+	}
+        if (timerDisplay) timerDisplay.textContent = '00:00';
+          timerInterval = setInterval(() => {
+          secondsElapsed++;
+            if (timerDisplay) {
+              const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+              const secs = String(secondsElapsed % 60).padStart(2, '0');
+              timerDisplay.textContent = `${mins}:${secs}`;
+            }
+          }, 1000);
+        }
+
+        function stopTimer() {
+          if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+          }
+        }
+
+	let numberTries = 0;
+	let lastTry = 0;
+	const tryLimit = 3;
+
+	function checkAnswer() {
+	  const status = document.getElementById('assisted-status');
+	  if (numberTries < tryLimit) {
+	    status.style.color = 'black';
+	    status.textContent = `You have only tried ${numberTries} times`;
+	    setTimeout(() => {
+	      status.style.color = 'lightblue';
+	      status.textContent = `You have only tried ${numberTries} times`;
+	    }, 2000);
+	  } else {
+            status.style.color = 'blue';
+	    status.textContent = `✓ The answer is: ${activeProblem.expectedAnswer}`;
+	    setTimeout(() => {
+              status.style.color = 'lightblue';
+	      status.textContent = `✓ THE ANSWER IS:<strong> ${activeProblem.expectedAnswer}</strong>`;
+	      numberTries = 0;
+	      cancelOut();
+	    }, 3000);
+	  }
+	}
+
+	function cancelOut() {
+	  const modal = document.getElementById('assisted-modal');
+	    if (modal) modal.classList.remove('active');
+	    if (CameFromUnassisted) {
+		CameFromUnassisted = null;
+      document.getElementById('unassisted-step-2').style.display = 'none'; 
+      document.getElementById('unassisted-step-1').style.display = 'none'; 
+	    }
+	  whichProblem(activeProblem);
+        }
+
+    function whichProblem(problem) {
+      const probTextt = document.getElementById('problem-solver-controls');
+        if (probTextt) { 
+            probTextt.innerHTML = `
+       <div id="unassisted-step-1" class="assisted-step-view" style="display: flex;
+         text-align: left">
+        <div class="option-list">
+         <p><strong>CHOOSE YOUR PROBLEM:</strong></p>
+        <form id="FormStart" autocomplete="off">
+          <label class="choice-card" onclick="startProblem(problemZero, 1)">
+            <input type="checkbox" name="choice-zero" autocomplete="off">
+            <span>${problemZero.problem}</span></label><br>
+          <label class="choice-card" onclick="startProblem(problemOne, 2)">
+            <input type="checkbox" name="choice-one" autocomplete="off">
+            <span>${problemOne.problem}</span></label><br>
+          <label class="choice-card" onclick="startProblem(problemTwo, 3)">
+            <input type="checkbox" name="choice-two" autocomplete="off">
+            <span>${problemTwo.problem}</span></label><br>
+          <label class="choice-card" onclick="startProblem(problemThree, 4)">
+            <input type="checkbox" name="choice-three" autocomplete="off">
+            <span>${problemThree.problem}</span></label><br>
+          <label class="choice-card" onclick="startProblem(problemFour, 5)">
+            <input type="checkbox" name="choice-four" autocomplete="off">
+            <span>${problemFour.problem}</span></label><br>
+          <label class="choice-card" onclick="startProblem(problemFive, 6)">
+            <input type="checkbox" name="choice-five" autocomplete="off">
+            <span>${problemFour.problem}</span></label><br>
+          <br><br>
+          <button class="btn" type="reset">Clear Selection</button>
+        </form>  
+        </div>
+      </div>
+    ` ;
+//    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+//      checkbox.checked = false;
+//    });
+//  });
+  }
+  }
+
+function startProblem(problem, probNum) {
+    if (!problem) return;
+    activeProblem = problem;
+    problemNumber = probNum;
+    startTimer(1);
+    const probDisplay = document.getElementById('problem-display');
+       if (probDisplay) probDisplay.textContent = `${probNum}`;
+    const container = document.getElementById('equation-container');
+    if (container) {
+        container.innerHTML = '';
+
+        const coeffs = activeProblem.coefficients || [];
+        const compounds = activeProblem.compounds || [];
+        // Default to 1 reactant if reactantCount isn't explicitly defined
+        const reactantCount = activeProblem.reactantCount || 1; 
+
+        coeffs.forEach((_, index) => {
+            // 1. Create coefficient input box
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.id = `coeff-${index}`;
+            input.min = '1';
+            input.placeholder = '?';
+            input.style.cssText = 'width: 55px; padding: 6px; text-align: center; font-size: 1.1rem; border: 2px solid #334155; border-radius: 6px; margin: 0 4px;';
+            container.appendChild(input);
+
+            // 2. Create formula text span (e.g. H₂)
+            const formula = document.createElement('span');
+            formula.textContent = ` ${compounds[index] || ''} `;
+            formula.style.cssText = 'font-size: 1.2rem; font-weight: bold; margin-right: 6px;';
+            container.appendChild(formula);
+
+            // 3. Add '+' between items or '→' between reactants and products
+            if (index < coeffs.length - 1) {
+                const separator = document.createElement('span');
+                
+                // If we have reached the exact index where reactants end, insert ' → '
+                // Otherwise, insert ' + ' between compounds on the same side
+                separator.textContent = (index === reactantCount - 1) ? ' → ' : ' + ';
+                
+                separator.style.cssText = 'font-size: 1.3rem; font-weight: bold; margin: 0 6px; color: black;';
+                container.appendChild(separator);
+            }
+        });
+    }
+
+    // Clear feedback and open modal
+    const statusMsg = document.getElementById('modal-status');
+    if (statusMsg) statusMsg.textContent = '';
+
+    const modal = document.getElementById('balancing-modal');
+    if (modal) modal.classList.add('active');
+}
+
+  function checkBalance() {
+  // console.log("Check Coefficients clicked. Active Problem:", activeProblem);
+
+  // 1. Guard check
+  if (!activeProblem || !Array.isArray(activeProblem.coefficients)) {
+    alert("Error: Problem data was lost. Click 'Start Problem Solver' again.");
+    return;
+  }
+
+  let isCorrect = true;
+
+  // 2. Validate inputs
+  activeProblem.coefficients.forEach((expectedCoeff, index) => {
+    const input = document.getElementById(`coeff-${index}`);
+    
+    if (!input) {
+      console.warn(`Could not find input element #coeff-${index}`);
+      isCorrect = false;
+      return;
+    }
+
+    // Convert both to numbers to avoid String vs Number comparison bugs
+    const userVal = Number(input.value.trim());
+    const targetVal = Number(expectedCoeff);
+
+    // console.log(`Coeff ${index} -> User: ${userVal}, Target: ${targetVal}`);
+
+    if (input.value.trim() === '' || isNaN(userVal) || userVal !== targetVal) {
+      isCorrect = false;
+      // Force red styles over existing CSS
+      input.style.setProperty('border', '3px solid #ef4444', 'important');
+      input.style.setProperty('background-color', '#fee2e2', 'important');
+      input.style.setProperty('color', '#991b1b', 'important');
+    } else {
+      // Force green styles over existing CSS
+      input.style.setProperty('border', '3px solid #22c55e', 'important');
+      input.style.setProperty('background-color', '#dcfce7', 'important');
+      input.style.setProperty('color', '#166534', 'important');
+    }
+  });
+
+  // 3. UI Feedback
+  const statusMsg = document.getElementById('modal-status');
+
+  // Inside checkBalance() when isCorrect === true:
+  if (isCorrect) {
+    stopTimer();
+    if (statusMsg) {
+      statusMsg.style.color = '#22c55e';
+      statusMsg.textContent = '✓ Correct! Reaction Balanced.';
+    }
+    if (secondsElapsed <= BottomTimeB || numberEntriesB < 10) {
+      let initials = prompt(`Good Job! Puzzle completed in ${secondsElapsed}s!\nEnter your initials (up to 3 letters):`);
+      if (initials) {
+        saveScore('Balancing', `${secondsElapsed}s`, `Problem: ${problemNumber}`, initials.substring(0, 3).toUpperCase());
+      }
+    }			 
+
+    setTimeout(() => {
+    // Hide balance modal
+      const balanceModal = document.getElementById('balancing-modal');
+      if (balanceModal) balanceModal.classList.remove('active');
+
+    // Show "Continue?" Mode Selection Modal
+      const modeModal = document.getElementById('mode-select-modal');
+      if (modeModal) modeModal.classList.add('active');
+    }, 1000);
+  } else {
+    if (statusMsg) {
+      statusMsg.style.color = '#ef4444';
+      statusMsg.textContent = '✗ Incorrect coefficients. Check your atom counts!';
+      setTimeout(() => {
+        statusMsg.style.color = 'lightblue';
+        statusMsg.textContent = '✗ Incorrect coefficients. Check your atom counts!';
+      }, 1000);
+    }
+  }
+ }
+
+  function selectMode(mode) {
+  currentSolverMode = mode;
+
+  // Close mode modal
+  const modeModal = document.getElementById('mode-select-modal');
+  if (modeModal) modeModal.classList.remove('active');
+
+  if (mode === 'unassisted') {
+    setupUnassistedView();
+  } else if (mode === 'assisted') {
+    startAssistedWizard();
+  }
+  }
+
+function setupUnassistedView() {
+  const probText = document.getElementById('problem-text');
+  
+  const step1 = document.getElementById('unassisted-step-1');
+  if (step1) step1.style.display = 'none';
+
+  if (probText) { 
+    probText.innerHTML = `
+      <!-- Added flex-direction: column to stack elements vertically -->
+      <div id="unassisted-step-2" class="assisted-step-view" font-size: 1rem style="display: flex; flex-direction: column; gap: 15px; align-items: stretch;">
+        <strong>${activeProblem.equation}</strong><br>
+        <strong>${activeProblem.problem}</strong><br>
+        
+        <input type="number" id="unassisted-answer-input" step="any" placeholder="Enter answer" style="padding: 10px; font-size: 1rem; border-radius: 6px; border: 2px solid #334155; width: 95%; box-sizing: border-box;">
+
+        <div style="display: flex; gap: 10px; align-items: center; justify-content: center; max-width: 350px; margin: 0 auto;">
+          <button type="button" class="btn" onclick="checkUnassistedAnswer()">Submit</button>
+        </div>
+      </div>
+      <div id="unassisted-status" style="margin-top: 15px; font-weight: bold;"></div>
+    `;
+  }
+}
+
+function checkUnassistedAnswer() {
+  const input = document.getElementById('unassisted-answer-input');
+  const status = document.getElementById('unassisted-status');
+  
+  if (!input || !activeProblem) return;
+
+  const userVal = parseFloat(input.value);
+  const expectedVal = activeProblem.expectedAnswer;
+
+  if (isNaN(userVal)) {
+    status.style.color = '#ef4444';
+    status.textContent = 'Please enter a numerical answer.';
+    setTimeout(() => {
+      status.style.color = 'lightgray';
+      status.textContent = 'Please enter a numerical answer.';
+    }, 2000);
+    return;
+  }
+    // Source - https://stackoverflow.com/a/2554357
+    // Posted by NVRAM, modified by community. See post 'Timeline' for change history
+    // Retrieved 2026-11-02, License - CC
+    var ele = document.getElementById('FormStart');
+    for(var i=0;i<ele.length;i++) {
+	ele[i].checked = false;
+    }
+
+  // Calculate percentage difference
+  const percentDiff = Math.abs(userVal - expectedVal) / expectedVal;
+
+  if (percentDiff <= 0.025) { // Within 2.5% tolerance
+    status.style.color = '#22c55e';
+    status.textContent = `✓ Excellent! Your answer (${userVal}) is correct!`;
+    
+    setTimeout(() => {
+      status.style.color = 'lightgray';
+      status.textContent = `✓ Excellent! Your answer (${userVal}) is correct!`;
+      document.getElementsByName('unassisted-step-1').forEach(checkbox => checkbox.checked = false);
+      document.getElementById('unassisted-step-2').style.display = 'none'; 
+      document.getElementById('unassisted-step-1').style.display = 'block'; 
+    }, 2000);
+
+  } else if (percentDiff <= 0.10) { // Within 10% tolerance
+    status.style.color = 'black';
+    status.textContent = `Your answer (${userVal}) is close but not correct. Try again.`;
+    
+    setTimeout(() => {
+      status.style.color = 'lightgray';
+      status.textContent = `Your answer (${userVal}) is close but not correct. Try again.`;
+      document.getElementById('unassisted-step-2').style.display = 'block';
+      input.value = null;
+    }, 2000);
+
+  } else {
+    // Greater than 10% off -> Offer switch to Assisted mode
+    status.style.color = '#ef4444';
+    status.innerHTML = `
+      <p> ✗ Your answer is off by more than 10%.</p> 
+      <br><br>
+      <button type="button" class="btn" style="background: #8b5cf6;"
+        onclick="switchToAssisted()"> Try Assisted Mode? </button><br>
+    `;
+    setTimeout(() => {
+      status.style.color = 'lightgray';
+      status.innerHTML = `<p> ✗ Your answer is off by more than 10%.</p>`;
+      document.getElementById('unassisted-step-2').style.display = 'block';
+    }, 3000);
+  }
+}
+
+    let CameFromUnassisted = null;
+
+    function switchToAssisted() {
+      const status = document.getElementById('unassisted-status');
+
+      status.style.color = 'lightgray';
+      status.innerHTML = `<p> ✗ Your answer is off by more than 10%.</p>`;
+      document.getElementById('unassisted-step-2').style.display = 'none';
+      CameFromUnassisted = 1;
+      startAssistedWizard();
+    }
+    
+  function startAssistedWizard() {
+
+  numberTries = 0;
+  lastTry = 0;
+  assistedStep = 1;
+
+  resetAssistedCardStyles();
+    // Source - https://stackoverflow.com/a/2554357
+    // Posted by NVRAM, modified by community. See post 'Timeline' for change history
+    // Retrieved 2026-11-02, License - CC
+    var ele = document.getElementById('FormStart');
+    for(var i=0;i<ele.length;i++) {
+	ele[i].checked = false;
+    }
+    var ele = document.getElementById('Form1');
+    for(var i=0;i<ele.length;i++) {
+	ele[i].checked = false;
+    }
+    var ele = document.getElementById('Form2');
+    for(var i=0;i<ele.length;i++) {
+	ele[i].checked = false;
+    }
+    var ele = document.getElementById('Form3');
+    for(var i=0;i<ele.length;i++) {
+	ele[i].checked = false;
+    }
+
+  // Hide other modals/views
+  document.querySelectorAll('.assisted-step-view').forEach(el => el.style.display = 'none');
+  document.getElementById('assisted-step-1').style.display = 'block';
+
+  // Open assisted modal
+  const assistedModal = document.getElementById('assisted-modal');
+      if (assistedModal) {
+          assistedModal.classList.add('active');
+          const parag = document.getElementById("theProblem");
+          parag.textContent = `The Problem: ${activeProblem.problem}`;
+      }
+  }
+
+  function resetAssistedCardStyles() {
+  document.querySelectorAll('.choice-card').forEach(card => {
+    card.classList.remove('correct-card', 'incorrect-card');
+  });
+  const status = document.getElementById('assisted-status');
+  if (status) status.textContent = '';
+  }
+
+  // SCREEN 1: INPUT VALUE CONVERSION
+  function checkStep1(cardElement, selectedUnit) {
+  resetAssistedCardStyles();
+  const status = document.getElementById('assisted-status');
+
+  if (selectedUnit === activeProblem.givenUnit) {
+    cardElement.classList.add('correct-card');
+    status.style.color = '#22c55e';
+    status.textContent = '✓ Correct! Loading mole ratio...';
+
+    setTimeout(() => {
+      renderStep2();
+    }, 1200);
+  } else {
+    cardElement.classList.add('incorrect-card');
+    status.style.color = '#ef4444';
+    status.textContent = '✗ Incorrect unit conversion path. Try again.';
+    setTimeout(() => {
+    var ele = document.getElementById('Form1');
+    for(var i=0;i<ele.length;i++) {
+	ele[i].checked = false;
+    }
+    status.style.color = 'lightblue';
+    status.textContent = '✗ Incorrect unit conversion path. Try again.';
+    }, 1200);
+}
+  }
+  
+
+// Source - https://stackoverflow.com/a/2554357
+// Posted by NVRAM, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-11-02, License - CC BY-SA 4.0
+
+//var ele = document.getElementsByName('');
+//for(var i=0;i<ele.length;i++)
+//    ele[i].checked = false;
+//console.log(`ele.length ${ele.length}`);
+
+  // SCREEN 2: MOLE RATIO
+  function renderStep2() {
+   const paragR = document.getElementById("theEquation");
+   paragR.textContent = `Equation: ${activeProblem.equation}`;
+
+   const parag3 = document.getElementById("theProblem3");
+   parag3.textContent = `The Problem: ${activeProblem.problem}`;
+
+  document.getElementById('assisted-step-1').style.display = 'none';
+  document.getElementById('assisted-step-2').style.display = 'block';
+  resetAssistedCardStyles();
+
+  const container = document.getElementById('step2-options-container');
+  if (!container) return;
+
+  // Build mole ratio multiple choices
+  const targetC = activeProblem.targetCoeff;
+  const givenC = activeProblem.givenCoeff;
+
+  const choices = [
+    { text: `${givenC} mol ${activeProblem.givenCompound} / ${targetC} mol ${activeProblem.targetCompound}`, value: `${givenC}/${targetC}`, isCorrect: false },
+    { text: `${targetC} mol ${activeProblem.targetCompound} / ${givenC} mol ${activeProblem.givenCompound}`, value: `${targetC}/${givenC}`, isCorrect: true },
+    { text: `1 mol ${activeProblem.targetCompound} / 1 mol ${activeProblem.givenCompound}`, value: "1/1", isCorrect: false }
+  ];
+
+  container.innerHTML = '';
+  choices.forEach(opt => {
+    const card = document.createElement('label');
+    card.className = 'choice-card';
+    card.onclick = () => checkStep2(card, opt.isCorrect);
+    card.innerHTML = `<input type="checkbox" name="step2-ratio"> <span>${opt.text}</span>`;
+    container.appendChild(card);
+  });
+  }
+
+  function checkStep2(cardElement, isCorrect) {
+  resetAssistedCardStyles();
+  const status = document.getElementById('assisted-status');
+
+  if (isCorrect) {
+    cardElement.classList.add('correct-card');
+    status.style.color = '#22c55e';
+    status.textContent = '✓ Correct mole ratio! Proceeding to final product conversion...';
+
+    setTimeout(() => {
+      document.getElementById('assisted-step-2').style.display = 'none';
+      document.getElementById('assisted-step-3').style.display = 'block';
+      resetAssistedCardStyles();
+    }, 1000);
+          const parag2 = document.getElementById("theProblem2");
+          parag2.textContent = `The Problem: ${activeProblem.problem}`;
+  } else {
+    cardElement.classList.add('incorrect-card');
+    status.style.color = '#ef4444';
+    status.textContent = '✗ Incorrect mole ratio formula. Remember: (target coefficient) / (given coefficient).';
+    setTimeout(() => {
+    status.style.color = 'lightblue';
+    status.textContent = '✗ Incorrect mole ratio formula. Remember: (target coefficient) / (given coefficient).';
+      var ele = document.getElementById('Form2');
+      for(var i=0;i<ele.length;i++) {
+	  ele[i].checked = false;
+      }
+    }, 1000);
+  }
+  }
+
+  // SCREEN 3: FINAL PRODUCT CONVERSION
+  function checkStep3(cardElement, selectedUnit) {
+  resetAssistedCardStyles();
+  const status = document.getElementById('assisted-status');
+
+  if (selectedUnit === activeProblem.targetUnit) {
+    cardElement.classList.add('correct-card');
+    status.style.color = '#22c55e';
+    status.textContent = '✓ Correct! Opening calculation screen...';
+
+    setTimeout(() => {
+      renderStep4();
+    }, 1000);
+  } else {
+    cardElement.classList.add('incorrect-card');
+    status.style.color = '#ef4444';
+    status.textContent = '✗ Incorrect final conversion unit. Try again.';
+      setTimeout(() => {
+    status.style.color = 'lightblue';
+    status.textContent = '✗ Incorrect final conversion unit. Try again.';
+      var ele = document.getElementById('Form3');
+      for(var i=0;i<ele.length;i++) {
+	  ele[i].checked = false;
+      }
+    }, 1000);
+  }
+  }
+
+  // SCREEN 4: FINAL CALCULATION
+  function renderStep4() {
+  document.getElementById('assisted-step-3').style.display = 'none';
+  document.getElementById('assisted-step-4').style.display = 'block';
+  resetAssistedCardStyles();
+
+  const summary = document.getElementById('guided-summary-box');
+  if (summary) {
+    summary.innerHTML = `
+      <strong font-size=16px>Balanced Equation:</strong><p font-size=16px> ${activeProblem.equation}</p><br>
+      <strong font-size=16px>Formula Setup:</strong><br>
+      <p font-size=16px>(${activeProblem.givenValue} ${activeProblem.givenUnit} ${activeProblem.givenCompound} / ${activeProblem.givenMolarMass}  ${activeProblem.givenConversion} )
+      × (${activeProblem.targetCoeff} mol ${activeProblem.targetCompound} / ${activeProblem.givenCoeff} mol ${activeProblem.givenCompound}) 
+      × ${activeProblem.targetMolarMass} ${activeProblem.targetConversion}) </p> 
+    `;
+  }
+  }
+
+  function checkAssistedFinalAnswer() {
+  const input = document.getElementById('assisted-final-input');
+  const status = document.getElementById('assisted-status');
+  if (!input) return;
+
+  const userVal = parseFloat(input.value);
+  const expectedVal = activeProblem.expectedAnswer;
+
+  if (isNaN(userVal)) {
+    status.style.color = '#ef4444';
+    status.textContent = 'Please enter a numerical answer.';
+    return;
+    setTimeout(() => {
+      status.style.color = 'lightblue';
+      status.textContent = 'Please enter a numerical answer.'; // Clear message after 3 seconds
+    }, 2000);
+  }
+
+  if (lastTry === userVal) {
+    status.style.color = 'black';
+    status.textContent = `You must try a different value!`;
+
+    // Delay clearing or changing the message
+    setTimeout(() => {
+      status.style.color = 'lightblue';
+      status.textContent = ''; // Clear message after 3 seconds
+    }, 2000);
+
+    // Stop the rest of the function from running right now
+    return; 
+  }
+
+  numberTries++;
+  lastTry = userVal; 
+  const percentDiff = Math.abs(userVal - expectedVal) / expectedVal;
+
+var ele = document.getElementsByName('unassisted-step-1');
+for(var i=0;i<ele.length;i++)
+    ele[i].checked = false;
+
+  if (percentDiff <= 0.025) { // Within 2.5% tolerance
+    status.style.color = '#22c55e';
+    status.textContent = `✓ Excellent! Your answer (${userVal}) is correct!`;
+      setTimeout(() => {
+      const modal = document.getElementById('assisted-modal');
+      document.getElementById('unassisted-step-1').style.display = 'block'; 
+//      document.getElementById('unassisted-step-2').style.display = 'none'; 
+
+    if (modal) modal.classList.remove('active');
+    }, 2000);
+  } else if (percentDiff <= 0.10) { // Within 10% tolerance
+    status.style.color = 'black';
+    status.textContent = `Your answer (${userVal}) is close but not correct. Try again.`;
+    setTimeout(() => {
+    status.style.color = 'lightblue';
+    status.textContent = `Your answer (${userVal}) is close but not correct. Try again.`;
+    }, 2000);
+      document.getElementById('unassisted-step-1').style.display = 'none'; 
+      document.getElementById('unassisted-step-2').style.display = 'none'; 
+  } else {
+    status.style.color = '#ef4444';
+    status.textContent = '✗ Result is incorrect. Re-calculate using the formula setup above.';
+    setTimeout(() => {
+    status.style.color = 'lightblue';
+    status.textContent = '✗ Result is incorrect. Re-calculate using the formula setup above.';
+    input.value = null;
+    }, 2000);
+      document.getElementById('unassisted-step-1').style.display = 'block'; 
+//      document.getElementById('unassisted-step-2').style.display = 'none'; 
+  }
+  }
+
+      // Exit Game Logic
+        function exitGame() {
+        const confirmExit = confirm("Are you sure you want to exit the game?");
+        if (confirmExit) {
+            // Attempt to close the tab if opened via script
+            window.close();
+
+            // Fallback behavior if browser blocks window.close()
+            document.body.innerHTML = `
+                <div style="text-align: center; color: #f8fafc; font-family: system-ui; padding: 50px;">
+                <h1 style="color: #38bdf8;">Game Terminated</h1>
+                <p style="margin-top: 10px; color: #94a3b8;">You have exited the session. You can safely close this window or tab.</p>
+            </div>
+            `;
+        }
+        }
+
+        // Optional: Close modal if clicking outside the modal content box
+        window.onclick = function(event) {
+        const modal = document.getElementById('help-modal');
+        if (event.target === modal) {
+            closeHelpModal();
+        }
+        }
+
+      // --- Tab Switching ---
+      function switchTab(buttonElement, screenId) {
+;
+          stopTimer();
+          // 1. Highlight tab button if provided
+          if (buttonElement && buttonElement.classList) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+          }
+
+        // 2. Hide all screens
+        document.querySelectorAll('.view-screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+
+        // 3. Show target screen safely
+        const targetScreen = document.getElementById(screenId);
+        if (!targetScreen) {
+        console.error(`ID Mismatch: Could not find screen with id="${screenId}"`);
+        return;
+        }
+
+        //console.warn("ts a", targetScreen);
+        targetScreen.classList.add('active');
+          if(screenId==='history-view') {
+              renderHistory(0);
+          } else if(screenId==='ordering-view') {
+             startTimer(0);
+          } else if(screenId==='problems-view') {
+             whichProblem(activeProblem);
+          }
+        }
+
+  function resetOrderingGame() {
+    // 1. Safely check for startTimer
+    if (typeof startTimer === 'function') {
+        startTimer(0);
+    } else {
+        console.warn("startTimer function is missing!");
+    }
+
+    const poolZone = document.getElementById('pool-zone');
+    const msg = document.getElementById('ordering-message');
+    if (msg) msg.textContent = '';
+
+    // --- NEW: RESET DROP ZONE COLORS & STYLES ---
+    document.querySelectorAll('#ordering-view .drop-zone').forEach((zone) => {
+        // Clear lingering validation classes
+        zone.classList.remove('correct', 'incorrect', 'success', 'error');
+        
+        // Clear any inline styles set by checkOrdering
+        zone.style.borderColor = '';
+        zone.style.backgroundColor = '';
+        zone.style.color = '';
+
+        // Remove card inside drop zone
+        const card = zone.querySelector('.drag-card');
+        if (card) zone.removeChild(card);
+    });
+
+    // --- NEW: RESET POOL ZONE COLORS & STYLES ---
+    if (poolZone) {
+        poolZone.classList.remove('correct', 'incorrect', 'success', 'error');
+        poolZone.style.borderColor = '';
+        poolZone.style.backgroundColor = '';
+    }
+
+    // 2. Check if correctOrdering exists before trying to read it
+    if (typeof correctOrdering === 'undefined') {
+        console.error("CRASH PREVENTED: 'correctOrdering' object is missing or not defined!");
+        return;
+    }
+
+    // 3. Check if shuffle function exists
+    if (typeof shuffle !== 'function') {
+        console.error("CRASH PREVENTED: 'shuffle' function is missing!");
+        return;
+    }
+
+    // 4. Populate pool zone safely
+    if (poolZone) {
+        poolZone.innerHTML = '';
+        const items = shuffle(Object.values(correctOrdering));
+
+        items.forEach((text, i) => {
+            const card = document.createElement('div');
+            card.className = 'drag-card';
+            card.textContent = text;
+            card.draggable = true;
+            card.id = `card-${i}`;
+
+            card.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('text/plain', card.id);
+                card.classList.add('dragging');
+            });
+
+            card.addEventListener('dragend', () => card.classList.remove('dragging'));
+
+            // Safely attach click listener only if handleCardClick exists
+            if (typeof handleCardClick === 'function') {
+                card.addEventListener('click', handleCardClick);
+            }
+//        const topscore  = document.getElementById('best-time-display');
+//	topscore.textContent = '0';
+            score = 0;
+            document.getElementById('score-display').textContent = score;
+
+            poolZone.appendChild(card);
+        });
+    }
+    }
+
+        // 2. HELPER FUNCTIONS
+        function shuffle(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+        }
+
+        function clearSelection() {
+        document.querySelectorAll('.drag-card.selected').forEach(card => card.classList.remove('selected'));
+        }
+
+        function handleCardClick(e) {
+        // Optional click selection handling
+        const clickedCard = e.currentTarget;
+
+        // If clicking an already selected card, deselect it
+        if (selectedCard === clickedCard) {
+        clearSelection();
+        selectedCard = null;
+        return;
+        }
+        }
+
+        function updateTimerDisplay() {
+        const mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+        const secs = (secondsElapsed % 60).toString().padStart(2, '0');
+        document.getElementById('timer-display').textContent = `${mins}:${secs}`;
+
+        // 2. Hide all view screens
+        document.querySelectorAll('.view-screen').forEach(screen => {
+        screen.classList.remove('active');
+        });
+
+        // 3. Find and display the target screen
+        const targetScreen = document.getElementById(screenId);
+
+        if (targetScreen) {
+        targetScreen.classList.add('active');
+
+        // Trigger screen-specific game actions
+        if (screenId === 'problems-view' && typeof startProblem === 'function') {
+        if (typeof activeProblem !== 'undefined') {
+          startProblem(activeProblem);
+          }
+        } else if (screenId === 'history-view') {
+          if (typeof stopTimer === 'function') stopTimer();
+
+          if (typeof renderHistory === 'function') renderHistory(0);
+        }
+        } else {
+        // Moved to the proper 'else' block so it only triggers when screen is missing
+        console.error("Tab target screen not found:", screenId);
+        }
+        }
+
+        // Open Help Modal
+        function openHelpModal() {
+        // Changes display from 'none' to 'flex' so it centers on screen
+        document.getElementById('help-modal').style.display = 'flex';
+        }
+
+        // Close Help Modal
+        function closeHelpModal() {
+        // Hides it again
+        document.getElementById('help-modal').style.display = 'none';
+        }
+
+        function handleCardClick(e) {
+        // Clear previous selection and select the new card
+        // --- Initialize ---
+        window.onload = () => {
+        resetOrderingGame();
+        };
+        }
+
+      function checkOrdering() {
+        const dropZones = document.querySelectorAll('#ordering-view .drop-zone');
+        let correctCount = 0;
+
+        dropZones.forEach(zone => {
+            zone.classList.remove('correct', 'incorrect');
+            const stepNum = zone.getAttribute('data-step');
+            const card = zone.querySelector('.drag-card');
+
+            if (card && card.textContent === correctOrdering[stepNum]) {
+                zone.classList.add('correct');
+                correctCount++;
+            } else {
+                zone.classList.add('incorrect');
+            }
+        });
+        const msg = document.getElementById('ordering-message');
+        if (correctCount === 4) {
+            stopTimer();
+            score = 100;
+            document.getElementById('score-display').textContent = score;
+            msg.textContent = `Perfect! Solved in ${secondsElapsed}s.`;
+            msg.className = "message-success";
+//            msg.font-size=16px;
+	    if (secondsElapsed <= BottomTime || numberEntries < 10) {
+              let initials = prompt(`Good Job! Puzzle completed in ${secondsElapsed}s!\nEnter your initials (up to 3 letters):`);
+              if (initials) {
+		saveScore('Step Ordering', `${secondsElapsed}s`, `${score}%`, initials.substring(0, 3).toUpperCase());
+             }
+	   }	
+        } else {
+            msg.textContent = `${correctCount}/4 correct. Review highlighted errors.`;
+            msg.className = "message-error";
+	    score = correctCount*25;
+            document.getElementById('score-display').textContent = score;
+        }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+        // 1. Set up Drag & Drop Listeners once
+        startTimer(0);
+        const containers = document.querySelectorAll('#ordering-view .drop-zone, #pool-zone');
+        containers.forEach(container => {
+        container.addEventListener('dragover', e => {
+        e.preventDefault();
+        if (container.classList.contains('drop-zone')) container.classList.add('drag-over');
+        });
+
+        container.addEventListener('dragleave', () => container.classList.remove('drag-over'));
+
+        container.addEventListener('drop', e => {
+        e.preventDefault();
+        container.classList.remove('drag-over');
+        const cardId = e.dataTransfer.getData('text/plain');
+        const card = document.getElementById(cardId);
+        if (!card) return;
+
+        if (container.classList.contains('drop-zone')) {
+        const existing = container.querySelector('.drag-card');
+        const pool = document.getElementById('pool-zone');
+        if (existing && pool) pool.appendChild(existing);
+        }
+        container.appendChild(card);
+        clearSelection();
+        });
+        });
+
+        // 2. Initialize Game Cards safely
+        if (typeof resetOrderingGame === 'function') {
+          resetOrderingGame();
+        }
+        });
+
+let numberEntries  = 0;
+let numberEntriesB = 0;
+        // --- Score History & LocalStorage ---
+  function saveScore(mode, detail, status, initials) {
+    const history = JSON.parse(localStorage.getItem('stoich_history') || '[]');
+    const historyB = JSON.parse(localStorage.getItem('stoich_historyB') || '[]');
+    // 1. Add the new entry
+    if (mode === 'Balancing') {		  
+      historyB.unshift({
+        mode,
+        detail, // Assumes this contains or represents the time in seconds (e.g. "45s" or a number)
+        status,
+        initials
+    });
+      const besttimeDisplayB = document.getElementById('best-time-display2');
+      if (detail < BestTimeB) besttimeDisplayB.textContent = `${BestTimeB}`;
+
+    } else {
+      history.unshift({
+        mode,
+        detail, // Assumes this contains or represents the time in seconds (e.g. "45s" or a number)
+        status,
+        initials
+      });
+      const besttimeDisplay = document.getElementById('best-time-display');
+      if (detail < BestTime) besttimeDisplay.textContent = `${BestTime}`;
+
+    }
+
+    // 2. Sort from lowest to highest score (fastest time first)
+    if (mode === 'Balancing') {
+      historyB.sort((a, b) => {
+        // Extract numeric values from 'detail'
+	//  (handles both raw numbers and strings like "45s")
+        const scoreA = parseFloat(String(a.detail).replace(/[^0-9.]/g, '')) || 0;
+        const scoreB = parseFloat(String(b.detail).replace(/[^0-9.]/g, '')) || 0;
+        const topscoreB  = document.getElementById('best-time-display2');
+	const firstItemB = historyB[0];
+console.log(`fT: ${firstItemB}`);
+	topscoreB.textContent = firstItemB.detail;
+        numberEntriesB++;
+        return scoreA - scoreB; // Ascending order (lowest to highest)
+       });
+    } else {		   
+      history.sort((a, b) => {
+        // Extract numeric values from 'detail'
+	//  (handles both raw numbers and strings like "45s")
+        const scoreA = parseFloat(String(a.detail).replace(/[^0-9.]/g, '')) || 0;
+        const scoreB = parseFloat(String(b.detail).replace(/[^0-9.]/g, '')) || 0;
+        const topscore  = document.getElementById('best-time-display');
+	const firstItem  = history[0];
+	topscore.textContent = firstItem.detail;
+        numberEntries++;
+        return scoreA - scoreB; // Ascending order (lowest to highest)
+    });
+  }
+
+    // 3. Keep top 10 best/fastest scores and save
+    localStorage.setItem('stoich_history',  JSON.stringify(history.slice(0,  10)));
+    localStorage.setItem('stoich_historyB', JSON.stringify(historyB.slice(0, 10)));
+  }
+
+	let BestTime = null;
+	let BottomTime = 1000;
+	let BestTimeB = null;
+	let BottomTimeB = 1000;
+
+      function userHistory(which) {
+        const tbody = document.getElementById('history-tbody');
+        const history  = JSON.parse(localStorage.getItem('stoich_history') || '[]');
+        const historyB = JSON.parse(localStorage.getItem('stoich_historyB') || '[]');
+	length = ` ${history.length}`;
+	lengthB = ` ${historyB.length}`;
+        if (which === 0) {
+          if (length != 0) {
+            BestTime = `${history[0].detail}`;
+            if (length > 1)
+	      BottomTime = `${history[length-1].detail}`;
+            return 1;
+          }
+        } else {
+          if (lengthB != 0) {
+            BestTimeB   = `${historyB[0].detail}`;
+            if (lengthB > 1)
+console.log(`len: ${lengthB}`);
+	      BottomTimeB = `${historyB[lengthB-1].detail}`;
+            return 2;
+          }
+         }
+	return (0);
+        }
+
+      function renderHistory(which) {
+        whichHist = which;
+        const history = JSON.parse(localStorage.getItem('stoich_history') || '[]');
+        const historyB = JSON.parse(localStorage.getItem('stoich_historyB') || '[]');
+        const tbody = document.getElementById('history-tbody');
+        if (which === 0) {
+          tbody.innerHTML = history.length === 0 ? 
+          '<tr><td colspan="4" style="text-align:center;">No records stored yet.</td></tr>' : '';
+        } else {
+          tbody.innerHTML = historyB.length === 0 ? 
+          '<tr><td colspan="4" style="text-align:center;">No records stored yet.</td></tr>' : '';
+      }
+       
+        if (which === 0 && history.length != 0) {
+          history.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${item.mode}</td>
+                <td>${item.detail}</td>
+                <td style="color:" 'black'>${item.status}</td>
+                <td>${item.initials}</td>
+            `;
+            tbody.appendChild(tr);
+	});
+      } else if (which === 1 && historyB.length != 0) {
+        historyB.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${item.mode}</td>
+                <td>${item.detail}</td>
+                <td style="color:" 'black'>${item.status}</td>
+                <td>${item.initials}</td>
+            `;
+            tbody.appendChild(tr);
+	});
+      }
+    }
+
+    let whichHist = 0;
+
+    function clearHistory() {
+      if (whichHist === 1) {
+	localStorage.removeItem('stoich_historyB');
+        numberEntriesB = 0;
+	BestTimeB = null;
+	BottomTimeB = 1000;
+      } else {
+	localStorage.removeItem('stoich_history');
+        numberEntries = 0;
+	BestTime = null;
+	BottomTime = 1000;
+     }
+     renderHistory(whichHist);
+   }
+
+    window.addEventListener('pageshow', function () {
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach(function (checkbox) {
+        checkbox.checked = false;
+      });
+//console.warn("got here!");
+    });
+ </script>
+</body>
+</html>
