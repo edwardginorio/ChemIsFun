@@ -2188,7 +2188,20 @@ console.log(`len: ${lengthB}`);
 //console.warn("got here!");
     });
 
-   document.addEventListener('contextmenu', function(e) {
+  document.addEventListener('keydown', function(e) {
+    // Blocks Ctrl+U (Windows/Linux) and Cmd+U (Mac)
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'u') {
+      e.preventDefault();
+    }
+    
+    // Optional: Also blocks Cmd+Option+U (Safari/Chrome on Mac)
+    if (e.metaKey && e.altKey && e.key.toLowerCase() === 'u') {
+      e.preventDefault();
+    }
+  });
+
+		
+  document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
     });
 
