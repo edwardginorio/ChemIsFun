@@ -315,6 +315,10 @@ menu a {
         document.getElementById('help-modal').style.display = 'none';
         }
 
-</script>
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    });
+
+  </script>
 </body>
 </html>
